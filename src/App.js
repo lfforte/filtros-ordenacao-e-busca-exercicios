@@ -4,6 +4,7 @@ import pokemons from "./pokemon/pokemon.json";
 import PokemonCard from "./components/PokemonCard/PokemonCard";
 import { getColors } from "./utils/ReturnCardColor";
 import Header from "./components/Header/Header.js";
+import { Pokemon } from "./components/PokemonCard/styles.js";
 const GlobalStyle = createGlobalStyle`
   *{
     padding: 0;
@@ -21,6 +22,8 @@ const CardsContainer = styled.div`
 function App() {
   const [pesquisa, setPesquisa] = useState("");
   const [idFilter, setIdFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [orderFilter, setOrderFilter] = useState("");
 
   return (
     <>
@@ -30,14 +33,38 @@ function App() {
         setIdFilter={setIdFilter}
         pesquisa={pesquisa}
         setPesquisa={setPesquisa}
+        typeFilter={typeFilter}
+        setTypeFilter={setTypeFilter}
+        orderFilter={orderFilter}
+        setOrderFilter={setOrderFilter}
       />
       <CardsContainer>
-        {pokemons.filter((pokemon) => {
-          return idFilter ? pokemon.id.includes(idFilter) : pokemon
-        })
+        {console.log(orderFilter)}
+        {pokemons
+          .filter((pokemon) => {
+            return idFilter ? pokemon.id.includes(idFilter) : pokemon
+          })
           .filter((pokemon) => {
             return pokemon.name.english.toLowerCase().includes(pesquisa.toLowerCase());
           })
+          .filter((pokemon) => {
+            if (pokemon.type.includes(typeFilter)) {
+              return pokemon
+            } else if (!typeFilter) {
+              return pokemons
+            }
+          })
+          .sort((a, b) => {
+            switch (orderFilter) {
+              case 'cre':
+                return (a.name.english < b.name.english) - 1;
+              case 'dec':
+                return (a.name.english > b.name.english) - 1;
+              default:
+                return 0;
+            }
+          })
+
           .map((pokemon) => {
             return (
               <PokemonCard
